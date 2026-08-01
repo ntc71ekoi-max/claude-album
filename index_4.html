@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Album - 孫の成長記録</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .controls {
+            background: #f5f5f5;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .age-display {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #764ba2;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .batch-filter {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .batch-btn {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .batch-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .batch-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .display-area {
+            margin-top: 40px;
+        }
+
+        .milestone-section {
+            background: #f0f4ff;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .milestone-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .milestone-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .milestone-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .milestone-item h4 {
+            color: #764ba2;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        .milestone-item ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .milestone-item li {
+            padding: 5px 0;
+            font-size: 0.95em;
+            color: #555;
+        }
+
+        .milestone-item li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .comment-section {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #ffc107;
+            margin-top: 20px;
+        }
+
+        .comment-section h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .comment-section p {
+            color: #856404;
+            line-height: 1.6;
+        }
+
+        .batch-info {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #17a2b8;
+        }
+
+        .batch-info h3 {
+            color: #17a2b8;
+            margin-bottom: 10px;
+        }
+
+        .batch-info p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .photos-section {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .photos-section h4 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .photo-placeholder {
+            background: #f0f0f0;
+            padding: 40px;
+            border-radius: 8px;
+            color: #999;
+            font-style: italic;
+        }
+
+        .age-indicators {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .age-indicator {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            background: #f5f5f5;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .age-indicator:hover {
+            background: #e8e8e8;
+        }
+
+        .age-indicator.active {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        .no-data-message {
+            color: #999;
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+        }
+
+        footer {
+            background: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            color: #999;
+            border-top: 1px solid #ddd;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .batch-filter {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .milestone-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌟 Claude Album</h1>
+            <p>孫の成長記録：新生児～8歳（700枚の8年間）</p>
+        </header>
+
+        <div class="content">
+            <div class="controls">
+                <div class="control-group">
+                    <label>📅 月齢を選択（0～96ヶ月）</label>
+                    <div class="age-display">
+                        <span id="ageDisplay">0</span>ヶ月
+                        (<span id="ageYears">新生児</span>)
+                    </div>
+                    <input type="range" id="ageSlider" min="0" max="96" value="0" step="1">
+                </div>
+
+                <div class="control-group">
+                    <label>🏷️ バッチを選択</label>
+                    <div class="batch-filter">
+                        <button class="batch-btn active" data-batch="all">すべて</button>
+                        <button class="batch-btn" data-batch="1">バッチ1-7（0-6ヶ月）</button>
+                        <button class="batch-btn" data-batch="2">バッチ2（6-14ヶ月）</button>
+                        <button class="batch-btn" data-batch="3">バッチ3（14-19ヶ月）</button>
+                        <button class="batch-btn" data-batch="4">バッチ4（24-30ヶ月）</button>
+                        <button class="batch-btn" data-batch="5">バッチ5（36-48ヶ月）</button>
+                        <button class="batch-btn" data-batch="6">バッチ6（48-96ヶ月）</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="display-area">
+                <div id="batchInfo"></div>
+                <div id="milestoneInfo"></div>
+                <div id="commentInfo"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Claude Album - 孫の成長記録デジタル化プロジェクト</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">
+                2018年4月～2024年9月 | 新生児～8歳 | 700枚の記録
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        const data = {
+            batches: [
+                {
+                    id: 1,
+                    name: "バッチ1-7",
+                    ageRange: "0-6ヶ月",
+                    months: [0, 1, 2, 3, 4, 5, 6],
+                    files: 157,
+                    title: "新生児から乳児初期へ",
+                    description: "新生児反射から目的的な動きへの移行。視線追跡、社会的微笑の確立。毎日複数回の記録。親の細心な監視。",
+                    milestones: {
+                        physical: ["新生児反射", "視線追跡の開始", "社会的微笑"],
+                        cognitive: ["刺激への反応洗練"],
+                        emotional: ["親への執着深化"],
+                        social: ["顔への関心急速上昇"]
+                    },
+                    comment: "両親、特に母親の細心な記録。複数のカメラを使用。祖父母も登場する複数視点からの記録。"
+                },
+                {
+                    id: 2,
+                    name: "バッチ2",
+                    ageRange: "6-14ヶ月",
+                    months: [6, 7, 8, 9, 10, 11, 12, 13, 14],
+                    files: 109,
+                    title: "乳幼児前期",
+                    description: "座位の安定化からハイハイ、つかまり立ちへ。手指協調性の向上。物への執着と探索行動の急増。",
+                    milestones: {
+                        physical: ["座位の安定化", "クローリング開始", "つかまり立ち準備"],
+                        cognitive: ["因果関係の初期理解"],
+                        emotional: ["人見知り出現"],
+                        social: ["両親への特異的依存"]
+                    },
+                    comment: "発達の転換点が多い時期。季節の変化（秋から春へ）と成長が並行している。屋内外の活動が記録されている。"
+                },
+                {
+                    id: 3,
+                    name: "バッチ3",
+                    ageRange: "14-19ヶ月",
+                    months: [14, 15, 16, 17, 18, 19],
+                    files: 100,
+                    title: "乳幼児中期",
+                    description: "独立歩行の開始からぎこちない歩きへ。語彙爆発期。初期イヤイヤの本格化。自我の確立。",
+                    milestones: {
+                        physical: ["独立歩行開始", "バランス感覚向上"],
+                        cognitive: ["シンボル機能の芽生え", "言葉の概念理解"],
+                        emotional: ["初期イヤイヤの本格化"],
+                        social: ["同年代の子どもへの関心"]
+                    },
+                    comment: "『発達の転換点』が多い時期。親の記録がより頻繁になり、子どもの成長を捉えようとしている姿勢が見える。"
+                },
+                {
+                    id: 4,
+                    name: "バッチ4",
+                    ageRange: "24-30ヶ月（2歳～2.5歳）",
+                    months: [24, 25, 26, 27, 28, 29, 30],
+                    files: 94,
+                    title: "初期幼児期",
+                    description: "二語文への移行。第二次イヤイヤの本格化。『一人でやる』という独立性の強い欲求。色・数の初期理解。",
+                    milestones: {
+                        physical: ["複雑な運動スキル"],
+                        cognitive: ["二語文構成", "物の永続性"],
+                        emotional: ["第二次イヤイヤ"],
+                        social: ["家族外の大人への適応"]
+                    },
+                    comment: "新型コロナウイルスパンデミック期間。子どもの遊び環境と親の行動パターンに影響の可能性。親が困難な時期でも記録を続けた証拠。"
+                },
+                {
+                    id: 5,
+                    name: "バッチ5",
+                    ageRange: "36-48ヶ月（3-4歳）",
+                    months: [36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48],
+                    files: 100,
+                    title: "幼児期",
+                    description: "複雑な社会性の芽生え。学習準備性の確立。幼稚園入園。ルール理解と遵守の飛躍的向上。親からの心理的距離が広がる。",
+                    milestones: {
+                        physical: ["体が着実に大きく"],
+                        cognitive: ["前概念的思考から直観的思考へ"],
+                        emotional: ["情動制御が飛躍的に向上"],
+                        social: ["友人関係の形成", "共感と助け合い"]
+                    },
+                    comment: "幼稚園入園前後の極めて重要な時期。親の記録頻度が微妙に減少（子どもが親の手から離れ始める）。親の役割が『主要な養育者』から『教育パートナー』へシフト。"
+                },
+                {
+                    id: 6,
+                    name: "バッチ6",
+                    ageRange: "48-96ヶ月（4-8歳）",
+                    months: [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96],
+                    files: 88,
+                    title: "幼稚園年長～小学校中学年期",
+                    description: "社会的自立の深化。学習スキルの統合と拡張。就学準備と自律性の確立。小学校での本格的な学習と社会適応。",
+                    milestones: {
+                        physical: ["微細動作の高度化", "複雑な運動スキル"],
+                        cognitive: ["直観的思考", "抽象的概念の理解開始"],
+                        emotional: ["複雑な感情の表現と制御"],
+                        social: ["親友関係の形成", "グループでのリーダーシップ"]
+                    },
+                    comment: "『幼稚園から小学校への移行期』を記録。親が『見守る親』から『大切な瞬間を選別して記録する親』へシフト。子どもの自立に応じた親の引き放しが自然に起こっている。"
+                }
+            ]
+        };
+
+        const ageSlider = document.getElementById('ageSlider');
+        const batchButtons = document.querySelectorAll('.batch-btn');
+        let selectedBatch = 'all';
+
+        function getAgeLabel(months) {
+            if (months === 0) return "新生児";
+            if (months < 12) return `${months}ヶ月`;
+            const years = Math.floor(months / 12);
+            const remainingMonths = months % 12;
+            if (remainingMonths === 0) return `${years}歳`;
+            return `${years}歳${remainingMonths}ヶ月`;
+        }
+
+        function updateDisplay() {
+            const months = parseInt(ageSlider.value);
+            const label = getAgeLabel(months);
+
+            document.getElementById('ageDisplay').textContent = months;
+            document.getElementById('ageYears').textContent = label;
+
+            // 指定月齢で該当するバッチを取得
+            let currentBatches = data.batches.filter(b => b.months.includes(months));
+            
+            // selectedBatch に応じてフィルタリング
+            if (selectedBatch !== 'all') {
+                currentBatches = currentBatches.filter(b => b.id == selectedBatch);
+            }
+            
+            const batchInfo = document.getElementById('batchInfo');
+            const milestoneInfo = document.getElementById('milestoneInfo');
+            const commentInfo = document.getElementById('commentInfo');
+
+            if (currentBatches.length > 0) {
+                const currentBatch = currentBatches[0];
+                
+                batchInfo.innerHTML = `
+                    <div class="batch-info">
+                        <h3>📍 ${currentBatch.name} - ${currentBatch.ageRange}</h3>
+                        <p><strong>${currentBatch.title}</strong></p>
+                        <p>${currentBatch.description}</p>
+                        <p style="font-size: 0.9em; margin-top: 10px;">📸 ${currentBatch.files}枚の記録</p>
+                    </div>
+                `;
+
+                let milestoneHTML = '<div class="milestone-section"><h3>📊 この時期の発達マイルストーン</h3><div class="milestone-grid">';
+                
+                for (const [category, items] of Object.entries(currentBatch.milestones)) {
+                    const categoryLabel = {
+                        physical: '身体発達',
+                        cognitive: '認知発達',
+                        emotional: '情動発達',
+                        social: '社会性'
+                    }[category];
+
+                    milestoneHTML += `
+                        <div class="milestone-item">
+                            <h4>${categoryLabel}</h4>
+                            <ul>
+                                ${items.map(item => `<li>${item}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+                
+                milestoneHTML += '</div></div>';
+                milestoneInfo.innerHTML = milestoneHTML;
+
+                commentInfo.innerHTML = `
+                    <div class="comment-section">
+                        <h4>💬 親からのコメント</h4>
+                        <p>${currentBatch.comment}</p>
+                    </div>
+                `;
+            } else {
+                batchInfo.innerHTML = '<p class="no-data-message">この月齢の記録が見つかりません</p>';
+                milestoneInfo.innerHTML = '';
+                commentInfo.innerHTML = '';
+            }
+        }
+
+        ageSlider.addEventListener('input', updateDisplay);
+
+        // バッチボタンのイベント設定
+        for (let i = 0; i < batchButtons.length; i++) {
+            batchButtons[i].addEventListener('click', function(e) {
+                e.preventDefault();
+                // すべてのボタンのactiveクラスを削除
+                for (let j = 0; j < batchButtons.length; j++) {
+                    batchButtons[j].classList.remove('active');
+                }
+                // クリックされたボタンにactiveクラスを追加
+                this.classList.add('active');
+                // selectedBatchを更新
+                selectedBatch = this.getAttribute('data-batch');
+                
+                // 「すべて」以外の場合、そのバッチの最初の月齢に移動
+                if (selectedBatch !== 'all') {
+                    const batchId = parseInt(selectedBatch);
+                    const selectedBatchData = data.batches.find(b => b.id === batchId);
+                    if (selectedBatchData) {
+                        ageSlider.value = selectedBatchData.months[0];
+                    }
+                }
+                
+                // 表示を更新
+                updateDisplay();
+            });
+        }
+
+        // 初期表示
+        updateDisplay();
+    </script>
+</body>
+</html>
